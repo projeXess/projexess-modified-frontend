@@ -2,15 +2,19 @@
 import { Checkbox, Input } from "antd"
 import { Link, useNavigate } from "react-router-dom"
 import { FaGoogle, FaApple } from 'react-icons/fa'
-import { useDispatch } from "react-redux"
+// import { useDispatch } from "react-redux"
 import { ChangeEvent, FormEvent, MouseEvent, useEffect, useRef, useState } from "react"
-import { login } from "@/redux/slices/userSlice"
+// import { login } from "@/redux/slices/userSlice"
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 
 function Index() {
 
+
+
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
     const formRef = useRef<any>(null)
     const [formData, setFormData] = useState({
         firstName: '',
@@ -23,9 +27,27 @@ function Index() {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
     const handleSubmit = async (e: FormEvent<HTMLFormElement> | MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        dispatch(login({ ...formData }))
-        navigate('/create-project')
+        e.preventDefault();
+        try {
+            const { data } = await axios.post('https://projexess-backend.onrender.com/api/users/register', formData);
+            localStorage.setItem('userinfo', JSON.stringify(data));
+            toast.success('Success signup process')
+            navigate('/create-project');
+        } catch (error: unknown) {
+            console.error('There was an error creating the account!', error);
+    
+            // Handle the error type
+            if (axios.isAxiosError(error)) {
+                // Axios error
+                toast.error(error.response?.data?.message || 'An error occurred during registration');
+            } else if (error instanceof Error) {
+                // Native Error
+                toast.error(error.message);
+            } else {
+                // Fallback for unexpected errors
+                toast.error('An unexpected error occurred');
+            }
+        }
     }
 
     useEffect(() => {
@@ -36,7 +58,7 @@ function Index() {
         }
         window.addEventListener('keydown', e => handleRedirect(e))
 
-        return ()=>window.removeEventListener('keydown', e => handleRedirect(e))
+        return () => window.removeEventListener('keydown', e => handleRedirect(e))
     }, [])
 
 
@@ -93,16 +115,16 @@ function Index() {
                     </Link>
                 </div>
 
-                <div className="flex p-2 justify-between items-center gap-5">
+                {/* <div className="flex p-2 justify-between items-center gap-5">
                     <hr className="w-full" />
                     <p>or</p>
                     <hr className="w-full" />
 
-                </div>
-                <div className="flex flex-col gap-4">
+                </div> */}
+                {/* <div className="flex flex-col gap-4">
                     <button className="w-full p-2 outline-none border border-[#040308] text-[#040308] text-[0.9rem] rounded-md  flex items-center justify-center gap-5"> <FaGoogle />  Continue With Google</button>
                     <button className="w-full p-2 outline-none border border-[#040308] text-[#040308] text-[0.9rem] rounded-md flex items-center justify-center gap-5"> <FaApple /> Continue With Apple</button>
-                </div>
+                </div> */}
             </form>
         </div>
     )

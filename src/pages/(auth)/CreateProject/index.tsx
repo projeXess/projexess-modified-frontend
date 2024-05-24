@@ -2,15 +2,17 @@
 import React, { ChangeEvent, MouseEvent, useEffect, useState } from 'react'
 import { Input, Checkbox, Select } from "antd"
 import { Link, useNavigate } from "react-router-dom"
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
-import { addProject } from '@/redux/slices/projectSlice';
+// import { useDispatch } from 'react-redux';
+// import { RootState } from '@/redux/store';
+// import { addProject } from '@/redux/slices/projectSlice';
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 
 const { TextArea } = Input;
 
 function Index() {
-    const { user } = useSelector((state: RootState) => state.userReducer)
+    const user = JSON.parse(localStorage.getItem('userinfo')!)
     const [tags, setTags] = React.useState<any[]>([
 
     ])
@@ -27,7 +29,7 @@ function Index() {
     }
 
     const navigate = useNavigate()
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
     const [formData, setFormData] = useState({
         projectName: '',
         projectDescription: '',
@@ -44,10 +46,31 @@ function Index() {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
     const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        dispatch(addProject({ ...formData, projectMembers: tags }))
-        navigate('/dashboard')
-    }
+        e.preventDefault();
+    
+        try {
+            const { data } = await axios.post('https://projexess-backend.onrender.com/api/projects/create', formData);
+            localStorage.setItem('userinfo', JSON.stringify(data));
+            toast.success('Successfully created project');
+            navigate('/dashboard');
+        } catch (error: unknown) {
+            console.error('There was an error creating the account!', error);
+            
+            // Handle the error type
+            if (axios.isAxiosError(error)) {
+                // Error from Axios
+                toast.error(error.response?.data?.message || 'An error occurred');
+            } else if (error instanceof Error) {
+                // Native Error
+                toast.error(error.message);
+            } else {
+                // Fallback for unexpected errors
+                toast.error('An unexpected error occurred');
+            }
+    
+            navigate('/dashboard');
+        }
+    };
 
     useEffect(() => {
         const handleRedirect = (e: KeyboardEvent) => {
@@ -107,10 +130,10 @@ function Index() {
                         placeholder="Select city"
                     >
 
-                        <Select.Option value="Rubavu">Rubavu</Select.Option>
+                        <Select.Option value="Rubavu">Kicukiro</Select.Option>
                         <Select.Option value="Gasabo">Gasabo</Select.Option>
-                        <Select.Option value="Musanze">Musanze</Select.Option>
-                        <Select.Option value="Nyagatare">Nyagatare</Select.Option>
+                        <Select.Option value="Musanze">Nyarugenge</Select.Option>
+                        <Select.Option value="Nyagatare">Gicumbi</Select.Option>
                     </Select>
                 </div>
 
