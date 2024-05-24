@@ -1,5 +1,4 @@
 import { explorerListItems, socials, useCasesItems, valuePropoItems } from "@/utils/constants"
-import { ArrowUpRight } from "lucide-react"
 import { FormEvent, MouseEvent } from "react"
 import { Link } from "react-router-dom"
 import { toast } from 'react-toastify'

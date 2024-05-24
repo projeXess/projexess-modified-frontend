@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox, Input } from "antd"
 import { Link, useNavigate } from "react-router-dom"
-import { FaGoogle, FaApple } from 'react-icons/fa'
 // import { useDispatch } from "react-redux"
 import { ChangeEvent, FormEvent, MouseEvent, useEffect, useRef, useState } from "react"
 // import { login } from "@/redux/slices/userSlice"
